@@ -14,6 +14,12 @@ class UIRobot implements BotConnection{
         this.checkMaster = null
         this.msg = []
     }
+    getPlayerInfo(qq: string) {
+        return {
+            userId: qq,
+            nickname: qq
+        }
+    } 
     checkEndPoint(user_id: string) {
         return user_id==='UI:9999'
     }

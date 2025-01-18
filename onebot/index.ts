@@ -276,6 +276,16 @@ class OneBotMsgSender implements BotConnection{
             return res
         })
     }
+    getPlayerInfo(userId: string) {
+        const Info = qqCache.get(parseInt(userId.replace('QQ:','')))
+        if (Info) {
+            return {
+                userId: 'QQ:'+Info.user_id,
+                nickname: Info.nickname
+            }
+        }
+        return null
+    }
     getRoleInGroup(group_id:number,user_id:number) {
         return new Promise<PersonInGroup>((resolve,reject) => {
             const Info = grouproleCache.get(`${group_id}_${user_id}`)

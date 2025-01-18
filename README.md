@@ -20,7 +20,7 @@
 - replyToSender
 - replyPerson
 - replyGroup
-- getCtxProxyFirst(x)
+- getCtxProxyFirst
 - getEndPoints
 - newMessage
 - createTempCtx
@@ -41,3 +41,5 @@ ExtInfo类的api支持
 - 插件配置修改(x)
 - ui测试界面的at功能，图片功能(x)
 - 全局配置修改(x)
+
+另外目前有个和海豹实现不一致的，reply在这里允许直接编辑ctx对象丢进去，海豹必须要createTempCtx，因此如果使用这个服务器测试用的话最好自己在海豹上再测试一遍

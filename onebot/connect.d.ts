@@ -18,4 +18,10 @@ export interface BotConnection {
     sendMsgGroup:({user_id,group_id,message}:{user_id?:string,group_id:string,message:string}) => any
     // 获取EndPoint的userId
     getEndPoint:()=>string
+    getPlayerInfo: (userId:string) => PlayerInfo|null
+}
+
+type PlayerInfo = {
+    userId: string
+    nickname: string
 }
