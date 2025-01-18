@@ -1,7 +1,7 @@
 import { MetaInfo, ScriptInfo } from "./manager";
 import { BotConnection } from "../onebot/connect";
 import { SealCmdArgs, SealMsg, SealMsgContext } from "../sealdiceContext";
-import vm from 'vm';
+import * as vm from 'vm';
 import { CmdItemInfo, createSealModel, DefaultValue, SealExtInfo, TimeTask } from "./seal";
 
 export class ExtControllor {

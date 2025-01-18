@@ -1,6 +1,16 @@
 import { SealMsgContext, SealMsg, SealCmdArgs } from "../sealdiceContext"
 import { ExtControllor } from "./controllor"
-
+import {dc} from '../dicevm'
+const c = dc.newVMForPlaygournd()
+c.SetConfig({
+    OpCountLimit: 30000,
+    PrintBytecode: true,
+    EnableDiceWoD: true,
+    EnableDiceCoC: true,
+    EnableDiceFate: true,
+    EnableDiceDoubleCross: true,
+})
+console.log(c)
 export function createSealModel(_this: ExtControllor) {
     return {
         ext: {
@@ -170,8 +180,25 @@ export function createSealModel(_this: ExtControllor) {
         },
         registerTask(ext: SealExtInfo, taskType: TimeOutTaskType, value: string, fn: Function, key?: string, desc?: string) {
 
+        },
+        format(ctx:SealExtInfo,text: string) {
+            const arr = extractNestedContent(text).map(v => {
+                let s = v.s
+                if (!v.t) {
+                    if (v.s.startsWith('%')&&v.s.endsWith('%')) {
+                        s = v.s.substring(1,s.length-1)
+                    }
+                    console.log('?',s.trim())
+                    c.Run(s.trim())
+                    if (c.Error) {
+                        return c.GetErrorText()
+                    }
+                    return c.Ret.ToString()
+                }
+                return s
+            })
+            return arr.join('')
         }
-
     }
 }
 
@@ -259,6 +286,47 @@ export class SealExtInfo {
 
 }
 
+function extractNestedContent(text:string):{s:string,t:boolean}[] {
+    let result = [];
+    let stack = [];
+    let currentContent = '';
+    let inBraces = false;
+    let last = 0
+    for (let i = 0; i < text.length; i++) {
+        let char = text[i];
+
+        if (char === '{') {
+            if (inBraces) {
+                // 嵌套的情况，直接加入栈中
+                stack.push(currentContent);
+                currentContent = '';
+            }else {
+                result.push({s: text.substring(last,i), t: true})
+            }
+            inBraces = true;
+        } else if (char === '}') {
+            if (inBraces) {
+                if (stack.length === 0) {
+                    result.push({s:currentContent, t: false}); // 提取出完整的内容
+                    currentContent = '';
+                    inBraces = false;
+                    last = i+1;
+                } else {
+                    currentContent = stack.pop() + '{' + currentContent + '}'; // 处理嵌套
+                }
+            }
+        } else {
+            if (inBraces) {
+                currentContent += char;
+            }
+        }
+    }
+    result.push({s: text.substring(last,text.length), t: true})
+    return result;
+}
+
+
+
 type TimeOutTaskType = 'cron' | 'daily'
 export type TimeTask = {
     taskType: TimeOutTaskType
@@ -290,3 +358,4 @@ interface SealCmdRes {
 }
 
 export type DefaultValue = number | string | string[]
+

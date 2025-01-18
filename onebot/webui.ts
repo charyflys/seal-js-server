@@ -61,8 +61,14 @@ class UIRobot implements BotConnection{
         const match = (checkText.match(/^(\.|。)\S+(\s|\n)*/) as RegExpMatchArray)
         if ((checkText.startsWith('.')||checkText.startsWith('。'))&&match) {
             const cmd = match[0].trim()
-            const text = checkText.replace(cmd,'').trim()
-            const cmdargs = text.replaceAll('\n',' ').split(/ +/)
+            let text = checkText.replace(cmd,'').trim()
+            let tmp = text.replace('\n',' ')
+            while(tmp!==text) {
+                text = tmp
+                tmp = tmp.replace('\n',' ')
+            }
+            const cmdargs = text.split(/ +/)
+            // let cmdargs = text.replaceAll('\n',' ').split(/ +/)
             // const ats = context.message.filter(v => v.type==='at').map(v => ({userId:v.data.qq}))
             const args = new CmdArgs(
                 cmd.substring(1),
